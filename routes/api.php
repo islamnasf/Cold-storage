@@ -67,6 +67,7 @@ Route::group(['middleware'=>'auth:api'],function($router){
     Route::get('/client/{id}/show',[ClientController::class,'show']);
     Route::delete('/client/{id}/delete',[ClientController::class,'destroy']);
     Route::post('/client/search',[ClientController::class,'search']);
+    Route::post('/client/newterm/{client}/{amber}/{fridge}/{price}',[ClientController::class,'newterm']);
 });
 //expense
 Route::group(['middleware'=>'auth:api'],function($router){
