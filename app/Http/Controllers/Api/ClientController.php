@@ -32,11 +32,11 @@ class ClientController extends Controller
         }
     }
     public function store(Request $Request ,int $amber,int $fridge,int $term ,int $price){
+        $user_id=Auth::user()->id;
         $amber_id=Amber::with('clients')->where('id',$amber)->first();   
         $fridge_id=Fridge::with('clients')->where('id',$fridge)->first();   
         $term_id=Term::with('clients')->where('id',$term)->first();   
         $price_id=PriceList::with('clients')->where('id',$price)->first();   
-        $user_id=Auth::user()->id;
         $client=Client::create([
                 'name'=> $Request->name, 
                 'phone'=> $Request->phone, 
@@ -218,7 +218,7 @@ class ClientController extends Controller
            ],200
         );
     }
-//Add New Term For Client 
+//Add New Term For Existing  Client 
 public function newterm(Request $Request ,int $client,int $amber,int $fridge ,int $price){
     $user_id=Auth::user()->id;
     $client_id=Client::where('id',$client)->where('user_id',$user_id)->first();
@@ -300,6 +300,175 @@ public function newterm(Request $Request ,int $client,int $amber,int $fridge ,in
         ],404);
         }
     }
-
+//you want to add client with new term or new price__list
+   public function clientWithNewTermOrNewPrice(Request $Request ,int $amber,int $fridge,int $term ,int $price){
+    $user_id=Auth::user()->id;
+    $amber_id=Amber::with('clients')->where('id',$amber)->first();   
+    $fridge_id=Fridge::with('clients')->where('id',$fridge)->first();   
+    $term_id=Term::with('clients')->where('id',$term)->first();   
+    $price_id=PriceList::with('clients')->where('id',$price)->first();   
+    if ($term_id != null && $price_id != null) {
+    $client=Client::create([
+            'name'=> $Request->name, 
+            'phone'=> $Request->phone, 
+            'address'=> $Request->address, 
+            'vegetable_name'=> $price_id->vegetable_name, 
+            'amber'=> $amber_id->name, 
+            'fridge'=> $fridge_id->name, 
+            'price_all'=> $Request->price_all, 
+            'location'=> $Request->location,  
+            'ton'=> $Request->ton,         
+            'small_shakara'=> $Request->small_shakara,
+            'big_shakara'=> $Request->big_shakara,
+            'price_list_id'=> $price_id->id, 
+            'avrage'=> $Request->avrage,  
+            'shakayir'=> $Request->shakayir,
+            'price_one'=> $Request->price_one,
+            'fridge_id'=> $fridge_id->id, 
+            'amber_id'=> $amber_id->id, 
+            'term_id'=> $term_id->id, 
+            'user_id'=> $user_id,    
+        ]);
+       }elseif($term_id === null && $price_id != null){
+        $term=Term::create([
+            'name'=> $Request->term_name,
+            'start'=> $Request->start,
+            'end'=> $Request->end,
+            'user_id'=> $user_id,
+        ]);
+            $client=Client::create([
+                'name'=> $Request->name, 
+                'phone'=> $Request->phone, 
+                'address'=> $Request->address, 
+                'vegetable_name'=> $price_id->vegetable_name, 
+                'amber'=> $amber_id->name, 
+                'fridge'=> $fridge_id->name, 
+                'price_all'=> $Request->price_all, 
+                'location'=> $Request->location,  
+                'ton'=> $Request->ton,         
+                'small_shakara'=> $Request->small_shakara,
+                'big_shakara'=> $Request->big_shakara,
+                'price_list_id'=> $price_id->id, 
+                'avrage'=> $Request->avrage,  
+                'shakayir'=> $Request->shakayir,
+                'price_one'=> $Request->price_one,
+                'fridge_id'=> $fridge_id->id, 
+                'amber_id'=> $amber_id->id, 
+                'term_id'=> $term->id, 
+                'user_id'=> $user_id,    
+            ]);
+         
+       }elseif($term_id != null && $price_id === null){
+        $price=PriceList::create([
+            'vegetable_name'=> $Request->vegetable_name,
+            'ton'=> $Request->ton,
+            'small_shakara'=> $Request->small_shakara,
+            'big_shakara'=> $Request->big_shakara,
+            'user_id'=> $user_id,
+        ]);
+            $client=Client::create([
+                'name'=> $Request->name, 
+                'phone'=> $Request->phone, 
+                'address'=> $Request->address, 
+                'vegetable_name'=> $price->vegetable_name, 
+                'amber'=> $amber_id->name, 
+                'fridge'=> $fridge_id->name, 
+                'price_all'=> $Request->price_all, 
+                'location'=> $Request->location,  
+                'ton'=> $Request->ton,         
+                'small_shakara'=> $Request->small_shakara,
+                'big_shakara'=> $Request->big_shakara,
+                'price_list_id'=> $price->id, 
+                'avrage'=> $Request->avrage,  
+                'shakayir'=> $Request->shakayir,
+                'price_one'=> $Request->price_one,
+                'fridge_id'=> $fridge_id->id, 
+                'amber_id'=> $amber_id->id, 
+                'term_id'=> $term_id->id, 
+                'user_id'=> $user_id,    
+            ]);
+           
+       }elseif($term_id === null && $price_id === null){
+        $term=Term::create([
+            'name'=> $Request->name,
+            'start'=> $Request->start,
+            'end'=> $Request->end,
+            'user_id'=> $user_id,
+        ]);
+        $price=PriceList::create([
+            'vegetable_name'=> $Request->vegetable_name,
+            'ton'=> $Request->ton_price,
+            'small_shakara'=> $Request->small_shakara_price,
+            'big_shakara'=> $Request->big_shakara_price,
+            'user_id'=> $user_id,
+        ]);
+            $client=Client::create([
+                'name'=> $Request->name, 
+                'phone'=> $Request->phone, 
+                'address'=> $Request->address, 
+                'vegetable_name'=> $price->vegetable_name, 
+                'amber'=> $amber_id->name, 
+                'fridge'=> $fridge_id->name, 
+                'price_all'=> $Request->price_all, 
+                'location'=> $Request->location,  
+                'ton'=> $Request->ton,         
+                'small_shakara'=> $Request->small_shakara,
+                'big_shakara'=> $Request->big_shakara,
+                'price_list_id'=> $price->id, 
+                'avrage'=> $Request->avrage,  
+                'shakayir'=> $Request->shakayir,
+                'price_one'=> $Request->price_one,
+                'fridge_id'=> $fridge_id->id, 
+                'amber_id'=> $amber_id->id, 
+                'term_id'=> $term->id, 
+                'user_id'=> $user_id,    
+            ]);
+        
+       }else{
+        return response()->json([
+            'status'=>404,
+            'message'=>"something went woring"
+        ],404);
+        }
+        $collect=Client::where('id',$client->id)->first(); 
+        //payment method
+        $ton_count=$collect->ton;
+        $small_count=$collect->small_shakara;
+        $big_count=$collect->big_shakara;
+        //Other payment method
+        $avg=$collect->avrage;
+        $num=$collect->shakayir;
+        $one=$collect->price_one;
+        if ($Request->price_all === null ) {
+        if( $ton_count > 0 || $small_count > 0|| $big_count > 0 ){
+            $client->update([
+                'price_all'=> $ton_count * $price_id->ton + $small_count * $price_id->small_shakara +$big_count * $price_id->big_shakara  ,
+            ]);
+        }
+        elseif( $ton_count === null && $small_count === null && $big_count === null && $avg > 0 && $num > 0 && $one > 0){
+            $client->update([
+                'price_all'=> $avg * $num * $one ,
+            ]);
+        }
+        else{
+            return response()->json([
+                'status'=>404,
+                'message'=>"The price is a must"
+            ],404);
+            }
+        }
+        if($client){
+        return response()->json([
+            'status'=>200,
+            'message'=>"Client Created Successfully",
+            //'client'=>$client,
+            'client'=>ClientResource::make($client)
+        ],200); 
+    }else{
+        return response()->json([
+            'status'=>404,
+            'message'=>"something went woring"
+        ],404);
+        }
+    }
 }
-

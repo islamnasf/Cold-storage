@@ -67,7 +67,8 @@ Route::group(['middleware'=>'auth:api'],function($router){
     Route::get('/client/{id}/show',[ClientController::class,'show']);
     Route::delete('/client/{id}/delete',[ClientController::class,'destroy']);
     Route::post('/client/search',[ClientController::class,'search']);
-    Route::post('/client/newterm/{client}/{amber}/{fridge}/{price}',[ClientController::class,'newterm']);
+    Route::post('/client/newterm/{client}/{amber}/{fridge}/{price}',[ClientController::class,'newterm']); //لتجديد الاشتراك مع مد الفترة 
+    Route::post('/client/newterm/newprice/{amber}/{fridge}/{price}/{term}',[ClientController::class,'clientWithNewTermOrNewPrice']);
 });
 //expense
 Route::group(['middleware'=>'auth:api'],function($router){
