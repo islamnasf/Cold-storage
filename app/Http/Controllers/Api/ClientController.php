@@ -16,11 +16,13 @@ class ClientController extends Controller
     public function index(){
         $user_id=Auth::user()->id;
         $client=Client::Select("*")->where('user_id',$user_id)->orderby("name","ASC")->get();
+        $total = Client::where('user_id',$user_id)->sum('price_all');
         if($client ->count() > 0){
             return response()->json([
                 'status'=>200,
                 //'client'=> $client
                 'client'=>clientResource::collection($client),
+                'total'=>$total
             ],200);
         }else{
             return response()->json([
@@ -300,3 +302,4 @@ public function newterm(Request $Request ,int $client,int $amber,int $fridge ,in
     }
 
 }
+
