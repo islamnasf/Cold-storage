@@ -23,7 +23,8 @@ class UpdateFridgeRequest extends FormRequest
     public function rules() : array
     {
         return [
-                'name'=>['required', Rule::unique('fridges')->ignore($this->id),],            
+                // 'name'=>['required', Rule::unique('fridges')->ignore($this->id),],   
+                'name'=>['required'],            
           //      'size'=>'required'
         ];
     }

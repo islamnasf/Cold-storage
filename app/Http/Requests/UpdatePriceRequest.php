@@ -24,7 +24,8 @@ class UpdatePriceRequest extends FormRequest
     public function rules() : array
     {
         return [
-                'vegetable_name'=>['required', Rule::unique('price_lists')->ignore($this->id),],            
+                // 'vegetable_name'=>['required', Rule::unique('price_lists')->ignore($this->id),],     
+                'vegetable_name'=>['required'],                   
                 'ton'=>'required',
                 'small_shakara'=>'required',
                 'big_shakara'=>'required',
@@ -34,7 +35,7 @@ class UpdatePriceRequest extends FormRequest
     {
         return [
                 'vegetable_name.required'=>'مطلوب اسم الثلاجة',
-                'vegetable_name.unique'=>' الاسم موجود مسبقا',
+                // 'vegetable_name.unique'=>' الاسم موجود مسبقا',
                 'ton.required'=>'مطلوب سعر لهذه الشكارة ',
                 'small_shakara.required'=>'مطلوب سعر لهذه الشكارة ',
                 'big_shakara.required'=>'مطلوب سعر لهذه الشكارة '

@@ -22,7 +22,7 @@ class TermRequest extends FormRequest
     public function rules() : array
     {
         return [
-                'name'=>'required|unique:terms',
+                'name'=>'required',
                 'start'=>'required',
                 'end'=>'required'
         ];
@@ -31,7 +31,7 @@ class TermRequest extends FormRequest
     {
         return [
                 'name.required'=>'مطلوب اسم الفترة',
-                'name.unique'=>' الاسم موجود مسبقا',
+               // 'name.unique'=>' الاسم موجود مسبقا',
                 'start.required'=>'مطلوب بداية الفترة ',
                 'end.required'=>'مطلوب نهاية الفترة '
         ];

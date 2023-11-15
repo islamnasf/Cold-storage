@@ -16,6 +16,7 @@ class Client extends Model
         'amber',
         'fridge',
         'location',
+        'status',
         //
         'price_all',
         //

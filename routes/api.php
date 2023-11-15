@@ -69,6 +69,8 @@ Route::group(['middleware'=>'auth:api'],function($router){
     Route::post('/client/search',[ClientController::class,'search']);
     Route::post('/client/newterm/{client}/{amber}/{fridge}/{price}',[ClientController::class,'newterm']); //لتجديد الاشتراك مع مد الفترة 
     Route::post('/client/newterm/newprice/{amber}/{fridge}/{price}/{term}',[ClientController::class,'clientWithNewTermOrNewPrice']);
+    Route::get('/client/persons',[ClientController::class,'onlyPersons']);
+    Route::get('/client/dealers',[ClientController::class,'onlyDealers']);
 });
 //expense
 Route::group(['middleware'=>'auth:api'],function($router){

@@ -23,14 +23,16 @@ class AmberUpdateRequest extends FormRequest
     public function rules() : array
     {
         return [
-                'name'=>['required', Rule::unique('ambers')->ignore($this->id),],            
+                // 'name'=>['required', Rule::unique('ambers')->ignore($this->id),],       
+                'name'=>['required'],            
+     
         ];
     }
     public function messages() : array
     {
         return [
                 'name.required'=>'مطلوب اسم العنبر ',
-                'name.unique'=>' الاسم موجود مسبقا',
+                //'name.unique'=>' الاسم موجود مسبقا',
         ];
     }
 }

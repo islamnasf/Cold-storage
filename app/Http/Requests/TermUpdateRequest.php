@@ -23,7 +23,8 @@ class TermUpdateRequest extends FormRequest
     public function rules() : array
     {
         return [
-                'name'=>['required', Rule::unique('terms')->ignore($this->id),],            
+                //'name'=>['required', Rule::unique('terms')->ignore($this->id),],    
+                'name'=>['required'],                    
                 'start'=>'required',
                 'end'=>'required'
 
@@ -33,7 +34,7 @@ class TermUpdateRequest extends FormRequest
     {
         return [
                 'name.required'=>'مطلوب اسم الفترة',
-                'name.unique'=>' الاسم موجود مسبقا',
+                // 'name.unique'=>' الاسم موجود مسبقا',
                 'start.required'=>'مطلوب بداية الفترة',
                 'end.required'=>'مطلوب نهاية الفترة',
         ];

@@ -5,10 +5,14 @@ namespace App\Http\Controllers;
 use App\Http\Resources\userLoginResource;
 use App\Http\Resources\userRegisterResource;
 use Illuminate\Http\Request;
-use Auth;
+//use Auth;
 use Validator;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth as FacadesAuth;
+use Tymon\JWTAuth\Contracts\Providers\Auth as ProvidersAuth;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Support\Facades\Auth;
+
 
 class AuthController extends Controller
 {
@@ -84,9 +88,17 @@ class AuthController extends Controller
     }
     public function update(Request $request)
     {
+        $userId =Auth::id();
         $this->validate($request, [
             'name' => 'required|string|max:255',
-            'phone'=>'required|unique:users|regex:/(01)[0-9]{9}/|digits:11|min:11|max:11',
+            'phone' => [
+                'required',
+                'unique:users,phone,' . $userId,
+                'regex:/(01)[0-9]{9}/',
+                'digits:11',
+                'min:11',
+                'max:11',
+            ],
             'password'=>'required|confirmed|min:6' 
         ]);
         try {

@@ -27,14 +27,14 @@ class AmberRequest extends FormRequest
         return [
                        
 
-            'name'=>'required|unique:ambers'
+            'name'=>'required'
         ];
     }
     public function messages() : array
     {
         return [
                 'name.required'=>'مطلوب اسم العنبر',
-                'name.unique'=>' الاسم موجود مسبقا',
+                //'name.unique'=>' الاسم موجود مسبقا',
         ];
     }
 }

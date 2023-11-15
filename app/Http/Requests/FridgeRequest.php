@@ -22,14 +22,14 @@ class FridgeRequest extends FormRequest
     public function rules() : array
     {
         return [
-                'name'=>'required|unique:fridges',
+                'name'=>'required',
         ];
     }
     public function messages() : array
     {
         return [
                 'name.required'=>'مطلوب اسم الثلاجة',
-                'name.unique'=>' الاسم موجود مسبقا',
+                //'name.unique'=>' الاسم موجود مسبقا',
                 //'size.required'=>'مطلوب حجم الثلاجة'
         ];
     }

@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('amber');
             $table->string('fridge');
             $table->string('location')->nullable();
+            $table->enum('status', ['dealer','person'])->default('dealer');
             //one//
              $table->string('price_all')->nullable();
             //two//

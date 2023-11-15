@@ -12,6 +12,7 @@ use App\Models\Term;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 class ClientController extends Controller
+
 {
     public function index(){
         $user_id=Auth::user()->id;
@@ -45,6 +46,7 @@ class ClientController extends Controller
                 'amber'=> $amber_id->name, 
                 'fridge'=> $fridge_id->name, 
                 'price_all'=> $Request->price_all, 
+                'status' => $Request->input('status','dealer'),
                 'location'=> $Request->location,  
                 'ton'=> $Request->ton,         
                 'small_shakara'=> $Request->small_shakara,
@@ -114,6 +116,7 @@ class ClientController extends Controller
                 'amber'=> $amber_id->name, 
                 'fridge'=> $fridge_id->name, 
                 'price_all'=> $Request->price_all, 
+                'status' => $Request->input('status','dealer'),
                 'location'=> $Request->location,  
                 'ton'=> $Request->ton,         
                 'small_shakara'=> $Request->small_shakara,
@@ -240,6 +243,7 @@ public function newterm(Request $Request ,int $client,int $amber,int $fridge ,in
             'amber'=> $amber_id->name, 
             'fridge'=> $fridge_id->name, 
             'price_all'=> $Request->price_all,  //
+            'status' => $Request->input('status','dealer'),
             'location'=> $client_id->location,  
             'ton'=> $Request->ton,             //
             'small_shakara'=> $Request->small_shakara,  //
@@ -316,6 +320,7 @@ public function newterm(Request $Request ,int $client,int $amber,int $fridge ,in
             'amber'=> $amber_id->name, 
             'fridge'=> $fridge_id->name, 
             'price_all'=> $Request->price_all, 
+            'status' => $Request->input('status','dealer'),
             'location'=> $Request->location,  
             'ton'=> $Request->ton,         
             'small_shakara'=> $Request->small_shakara,
@@ -344,6 +349,7 @@ public function newterm(Request $Request ,int $client,int $amber,int $fridge ,in
                 'amber'=> $amber_id->name, 
                 'fridge'=> $fridge_id->name, 
                 'price_all'=> $Request->price_all, 
+                'status' => $Request->input('status','dealer'),
                 'location'=> $Request->location,  
                 'ton'=> $Request->ton,         
                 'small_shakara'=> $Request->small_shakara,
@@ -374,6 +380,7 @@ public function newterm(Request $Request ,int $client,int $amber,int $fridge ,in
                 'amber'=> $amber_id->name, 
                 'fridge'=> $fridge_id->name, 
                 'price_all'=> $Request->price_all, 
+                'status' => $Request->input('status','dealer'),
                 'location'=> $Request->location,  
                 'ton'=> $Request->ton,         
                 'small_shakara'=> $Request->small_shakara,
@@ -410,6 +417,7 @@ public function newterm(Request $Request ,int $client,int $amber,int $fridge ,in
                 'amber'=> $amber_id->name, 
                 'fridge'=> $fridge_id->name, 
                 'price_all'=> $Request->price_all, 
+                'status' => $Request->input('status','dealer'),
                 'location'=> $Request->location,  
                 'ton'=> $Request->ton,         
                 'small_shakara'=> $Request->small_shakara,
@@ -471,4 +479,43 @@ public function newterm(Request $Request ,int $client,int $amber,int $fridge ,in
         ],404);
         }
     }
+//show only persons
+    public function onlyPersons(){
+        $user_id=Auth::user()->id;
+        $client=Client::Select("*")->where('status','person')->where('user_id',$user_id)->orderby("name","ASC")->get();
+        $total = Client::where('user_id',$user_id)->where('status','person')->sum('price_all');
+        if($client ->count() > 0){
+            return response()->json([
+                'status'=>200,
+                //'client'=> $client
+                'client'=>clientResource::collection($client),
+                'total'=>$total
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>404,
+                'message'=> 'No Client Found'
+            ],404);
+    }
+}
+//show only dealers
+    public function onlyDealers(){
+        $user_id=Auth::user()->id;
+        $client=Client::Select("*")->where('status','dealer')->where('user_id',$user_id)->orderby("name","ASC")->get();
+        $total = Client::where('user_id',$user_id)->where('status','dealer')->sum('price_all');
+        if($client ->count() > 0){
+            return response()->json([
+                'status'=>200,
+                //'client'=> $client
+                'client'=>clientResource::collection($client),
+                'total'=>$total
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>404,
+                'message'=> 'No Client Found'
+            ],404);
+        }
+    }
+
 }

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('price_lists', function (Blueprint $table) {
             $table->id();
-            $table->string('vegetable_name')->unique();
+            $table->string('vegetable_name');
             $table->string('ton')->nullable();
             $table->string('small_shakara')->nullable();
             $table->string('big_shakara')->nullable();
