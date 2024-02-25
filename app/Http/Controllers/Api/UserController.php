@@ -28,7 +28,7 @@ class UserController extends Controller
     }
     public function active(){
         $user_id=Auth::user()->id;
-        $user=User::select('name','phone','active',)->where('id', '!=', $user_id)->get();    
+        $user=User::select('*')->where('id', '!=', $user_id)->where('admin','0')->get();    
       if($user ){
          return response()->json([
               'status'=>200,
@@ -54,6 +54,21 @@ class UserController extends Controller
             return response()->json(['message' => 'Unable to toggle user activation status', 'error' => $e->getMessage()], 500);
         }
     }
+    //search aout user only not admin
+  public function search(Request $request)
+      {
+        $keyword = $request->input('keyword');
+            $users = User::where('admin', '0')
+            ->where(function ($query) use ($keyword) {
+                $query->where('name', 'LIKE', "%{$keyword}%")
+                      ->orWhere('phone', 'LIKE', "%{$keyword}%");
+            })->get();
+        return response()->json(
+            [
+                'status'=>200,
+                'users'=>$users
+           ],200
+        );
+    }
 
 }
-

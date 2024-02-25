@@ -54,14 +54,15 @@ class AmberController extends Controller
         }
         //
         public function update(AmberUpdateRequest $Request , int $amber ){
-            $amber=Amber::where('id',$amber)->first();    
-          if($amber){
-            $amber->update([
+            $amb=Amber::where('id',$amber)->first();    
+          if($amb){
+            $amb->update([
                 'name'=> $Request->name,
             ]);
              return response()->json([
                   'status'=>200,
-                  'message'=>"Amber Updated Successfully"
+                  'message'=>"Amber Updated Successfully",
+                  'amber'=>$amb
             ],200); 
           }else{
              return response()->json([

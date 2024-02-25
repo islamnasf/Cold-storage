@@ -15,9 +15,9 @@ class clientResource extends JsonResource
     public function toArray(Request $request)
     {
         $data = parent::toArray($request);
-        $data = array_map(function ($value) {
-            return $value === null ? 0 : $value;
-        }, $data);
+        // $data = array_map(function ($value) {
+        //     return $value === null ? 0 : $value;
+        // }, $data);
         return  [
             'id'=> $this->id,
             'name'=> $this->name,
@@ -25,7 +25,10 @@ class clientResource extends JsonResource
             'address'=> $this->address,
             'vegetable_name'=> $this->vegetable_name,
             'fridge_name'=> $this->fridge, 
-            'amber_details'=> AmberResource::make($this->ambers),
+           // 'amber_details'=> AmberResource::make($this->ambers),
+            'fridge_details'=> FridgeResource::make($this->fridges),
+            'price_list'=> PriceResource::make($this->price_lists),
+            'term_details'=> TermResource::make($this->terms),
             'data'=>$data
         ];
         //return $data;

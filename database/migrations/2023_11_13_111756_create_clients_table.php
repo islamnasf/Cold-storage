@@ -23,6 +23,7 @@ return new class extends Migration
             $table->enum('status', ['dealer','person'])->default('dealer');
             //one//
              $table->string('price_all')->nullable();
+             $table->string('quantity')->nullable();
             //two//
             $table->string('ton')->nullable();
             $table->string('small_shakara')->nullable();

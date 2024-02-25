@@ -11,7 +11,7 @@ class FridgeController extends Controller
 {
     public function index(){
         $user_id=Auth::user()->id;
-        $fridge=Fridge::Select("*")->where("user_id",$user_id)->with("ambers")->orderby("name","ASC")->get();
+        $fridge=Fridge::Select("*")->where("user_id",$user_id)->orderby("name","ASC")->get();
         if($fridge ->count() > 0){
             return response()->json([
                 'status'=>200,

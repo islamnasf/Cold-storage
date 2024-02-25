@@ -16,7 +16,7 @@ class ClientController extends Controller
 {
     public function index(){
         $user_id=Auth::user()->id;
-        $client=Client::Select("*")->where('user_id',$user_id)->orderby("name","ASC")->get();
+        $client=Client::Select("*")->where('user_id',$user_id)->orderby("id","ASC")->get();
         $total = Client::where('user_id',$user_id)->sum('price_all');
         if($client ->count() > 0){
             return response()->json([
@@ -27,17 +27,17 @@ class ClientController extends Controller
             ],200);
         }else{
             return response()->json([
-                'status'=>404,
+                'status'=>200,
                 'message'=> 'No Client Found'
-            ],404);
+            ],200);
         }
     }
     public function store(Request $Request ,int $amber,int $fridge,int $term ,int $price){
         $user_id=Auth::user()->id;
-        $amber_id=Amber::with('clients')->where('id',$amber)->first();   
-        $fridge_id=Fridge::with('clients')->where('id',$fridge)->first();   
-        $term_id=Term::with('clients')->where('id',$term)->first();   
-        $price_id=PriceList::with('clients')->where('id',$price)->first();   
+        $amber_id=Amber::where('id',$amber)->first();   
+        $fridge_id=Fridge::where('id',$fridge)->first();   
+        $term_id=Term::where('id',$term)->first();   
+        $price_id=PriceList::where('id',$price)->first();   
         $client=Client::create([
                 'name'=> $Request->name, 
                 'phone'=> $Request->phone, 
@@ -46,6 +46,7 @@ class ClientController extends Controller
                 'amber'=> $amber_id->name, 
                 'fridge'=> $fridge_id->name, 
                 'price_all'=> $Request->price_all, 
+                'quantity'=> $Request->quantity, 
                 'status' => $Request->input('status','dealer'),
                 'location'=> $Request->location,  
                 'ton'=> $Request->ton,         
@@ -82,9 +83,9 @@ class ClientController extends Controller
             }
             else{
                 return response()->json([
-                    'status'=>404,
+                    'status'=>200,
                     'message'=>"The price is a must"
-                ],404);
+                ],200);
                 }
             }
             if($client){
@@ -96,12 +97,12 @@ class ClientController extends Controller
             ],200); 
         }else{
             return response()->json([
-                'status'=>404,
+                'status'=>200,
                 'message'=>"something went woring"
-            ],404);
+            ],200);
             }
         }
-      public function update(Request $Request , int $client ,int $amber,int $fridge,int $term ,int $price){
+      public function update(Request $Request , int $client ,int $amber,int $fridge,int $price,int $term ){
              $user_id=Auth::user()->id;
              $clients=Client::where('id',$client)->where('user_id',$user_id)->first();
              $amber_id=Amber::with('clients')->where('id',$amber)->first();   
@@ -116,6 +117,7 @@ class ClientController extends Controller
                 'amber'=> $amber_id->name, 
                 'fridge'=> $fridge_id->name, 
                 'price_all'=> $Request->price_all, 
+                'quantity'=> $Request->quantity, 
                 'status' => $Request->input('status','dealer'),
                 'location'=> $Request->location,  
                 'ton'=> $Request->ton,         
@@ -152,9 +154,9 @@ class ClientController extends Controller
             }
             else{
                 return response()->json([
-                    'status'=>404,
+                    'status'=>200,
                     'message'=>"The price is a must"
-                ],404);
+                ],200);
                 }
         }
         if($client){
@@ -162,13 +164,13 @@ class ClientController extends Controller
                    'status'=>200,
                    'message'=>"Client Updated Successfully",
                    //'client'=>$client,
-                    'client'=>ClientResource::make($client)
+                     'client'=>ClientResource::make($clients)
                ],200); 
            }else{
              return response()->json([
-              'status'=>404,
+              'status'=>200,
               'message'=>"No Such Client Found !"
-               ],404);
+               ],200);
            }
         }
         public function show($client){
@@ -181,9 +183,9 @@ class ClientController extends Controller
                  ],200);
                  }else{
               return response()->json([
-                  'status'=>404,
+                  'status'=>200,
                   'message'=>"No Such client Found!"
-              ],404);
+              ],200);
           }
          }
          public function destroy($client){
@@ -196,31 +198,33 @@ class ClientController extends Controller
              ],200);
              }else{
               return response()->json([
-                  'status'=>404,
+                  'status'=>200,
                   'message'=>"No Such client Found!"
-              ],404);
+              ],200);
           }
       } 
-      public function search(Request $request)
-    {
-        $user_id=Auth::user()->id;
-        $query = $request->input('query');
-        $results = Client::where('user_id',$user_id)
-                       ->where('name', 'LIKE', '%' . $query . '%')
-                       ->orWhere('phone', 'LIKE', '%' . $query . '%')
-                       ->orWhere('address', 'LIKE', '%' . $query . '%')
-                       ->orWhere('vegetable_name', 'LIKE', '%' . $query . '%')
-                       ->orWhere('amber', 'LIKE', '%' . $query . '%')
-                       ->orWhere('price_all', 'LIKE', '%' . $query . '%')
-                       ->orWhere('fridge', 'LIKE', '%' . $query . '%')
-                       ->get();
-        return response()->json(
-            [
-                'status'=>200,
-                'results'=>$results
-           ],200
-        );
-    }
+//search
+    public function search(Request $request)
+   {
+     $user_id=Auth::user()->id;
+     $keyword = $request->input('keyword');
+         $clients = Client::where('user_id', $user_id)
+         ->where(function ($query) use ($keyword) {
+             $query->where('name', 'LIKE', '%' . $keyword . '%')
+             ->orWhere('phone', 'LIKE', '%' . $keyword . '%')
+             ->orWhere('address', 'LIKE', '%' . $keyword . '%')
+             ->orWhere('vegetable_name', 'LIKE', '%' . $keyword . '%')
+             ->orWhere('amber', 'LIKE', '%' . $keyword . '%')
+             ->orWhere('price_all', 'LIKE', '%' . $keyword . '%')
+             ->orWhere('fridge', 'LIKE', '%' . $keyword . '%');
+          })->get();
+     return response()->json(
+         [
+             'status'=>200,
+             'clients'=>ClientResource::collection($clients)
+            ],200
+     );
+ }
 //Add New Term For Existing  Client 
 public function newterm(Request $Request ,int $client,int $amber,int $fridge ,int $price){
     $user_id=Auth::user()->id;
@@ -228,12 +232,15 @@ public function newterm(Request $Request ,int $client,int $amber,int $fridge ,in
     $amber_id=Amber::with('clients')->where('id',$amber)->first();   
     $fridge_id=Fridge::with('clients')->where('id',$fridge)->first();   
     $price_id=PriceList::with('clients')->where('id',$price)->first();   
+    $term=Term::with('clients')->where('id',$Request->term_id)->first();   
+    if(!$term){
     $term=Term::create([
         'name'=> $Request->name,
         'start'=> $Request->start,
         'end'=> $Request->end,
         'user_id'=> $user_id,
     ]);
+}
     if($term){
     $client=Client::create([
             'name'=> $client_id->name, 
@@ -243,6 +250,7 @@ public function newterm(Request $Request ,int $client,int $amber,int $fridge ,in
             'amber'=> $amber_id->name, 
             'fridge'=> $fridge_id->name, 
             'price_all'=> $Request->price_all,  //
+            'quantity'=> $Request->quantity, 
             'status' => $Request->input('status','dealer'),
             'location'=> $client_id->location,  
             'ton'=> $Request->ton,             //
@@ -259,9 +267,9 @@ public function newterm(Request $Request ,int $client,int $amber,int $fridge ,in
         ]);
         }else{
         return response()->json([
-            'status'=>404,
+            'status'=>200,
             'message'=>"something went woring"
-        ],404);
+        ],200);
         }
         $collect=Client::where('id',$client->id)->first(); 
         //payment method
@@ -285,9 +293,9 @@ public function newterm(Request $Request ,int $client,int $amber,int $fridge ,in
         }
         else{
             return response()->json([
-                'status'=>404,
+                'status'=>200,
                 'message'=>"The price is a must"
-            ],404);
+            ],200);
             }
         }
         if($client){
@@ -299,9 +307,9 @@ public function newterm(Request $Request ,int $client,int $amber,int $fridge ,in
         ],200); 
     }else{
         return response()->json([
-            'status'=>404,
+            'status'=>200,
             'message'=>"something went woring"
-        ],404);
+        ],200);
         }
     }
 //you want to add client with new term or new price__list
@@ -320,6 +328,7 @@ public function newterm(Request $Request ,int $client,int $amber,int $fridge ,in
             'amber'=> $amber_id->name, 
             'fridge'=> $fridge_id->name, 
             'price_all'=> $Request->price_all, 
+            'quantity'=> $Request->quantity, 
             'status' => $Request->input('status','dealer'),
             'location'=> $Request->location,  
             'ton'=> $Request->ton,         
@@ -349,6 +358,7 @@ public function newterm(Request $Request ,int $client,int $amber,int $fridge ,in
                 'amber'=> $amber_id->name, 
                 'fridge'=> $fridge_id->name, 
                 'price_all'=> $Request->price_all, 
+                'quantity'=> $Request->quantity, 
                 'status' => $Request->input('status','dealer'),
                 'location'=> $Request->location,  
                 'ton'=> $Request->ton,         
@@ -380,6 +390,7 @@ public function newterm(Request $Request ,int $client,int $amber,int $fridge ,in
                 'amber'=> $amber_id->name, 
                 'fridge'=> $fridge_id->name, 
                 'price_all'=> $Request->price_all, 
+                'quantity'=> $Request->quantity, 
                 'status' => $Request->input('status','dealer'),
                 'location'=> $Request->location,  
                 'ton'=> $Request->ton,         
@@ -417,6 +428,7 @@ public function newterm(Request $Request ,int $client,int $amber,int $fridge ,in
                 'amber'=> $amber_id->name, 
                 'fridge'=> $fridge_id->name, 
                 'price_all'=> $Request->price_all, 
+                'quantity'=> $Request->quantity, 
                 'status' => $Request->input('status','dealer'),
                 'location'=> $Request->location,  
                 'ton'=> $Request->ton,         
@@ -434,9 +446,9 @@ public function newterm(Request $Request ,int $client,int $amber,int $fridge ,in
         
        }else{
         return response()->json([
-            'status'=>404,
+            'status'=>200,
             'message'=>"something went woring"
-        ],404);
+        ],200);
         }
         $collect=Client::where('id',$client->id)->first(); 
         //payment method
@@ -460,9 +472,9 @@ public function newterm(Request $Request ,int $client,int $amber,int $fridge ,in
         }
         else{
             return response()->json([
-                'status'=>404,
+                'status'=>200,
                 'message'=>"The price is a must"
-            ],404);
+            ],200);
             }
         }
         if($client){
@@ -474,15 +486,15 @@ public function newterm(Request $Request ,int $client,int $amber,int $fridge ,in
         ],200); 
     }else{
         return response()->json([
-            'status'=>404,
+            'status'=>200,
             'message'=>"something went woring"
-        ],404);
+        ],200);
         }
     }
 //show only persons
     public function onlyPersons(){
         $user_id=Auth::user()->id;
-        $client=Client::Select("*")->where('status','person')->where('user_id',$user_id)->orderby("name","ASC")->get();
+        $client=Client::Select("*")->where('status','person')->where('user_id',$user_id)->orderby("id","ASC")->get();
         $total = Client::where('user_id',$user_id)->where('status','person')->sum('price_all');
         if($client ->count() > 0){
             return response()->json([
@@ -493,15 +505,15 @@ public function newterm(Request $Request ,int $client,int $amber,int $fridge ,in
             ],200);
         }else{
             return response()->json([
-                'status'=>404,
+                'status'=>200,
                 'message'=> 'No Client Found'
-            ],404);
+            ],200);
     }
 }
 //show only dealers
     public function onlyDealers(){
         $user_id=Auth::user()->id;
-        $client=Client::Select("*")->where('status','dealer')->where('user_id',$user_id)->orderby("name","ASC")->get();
+        $client=Client::Select("*")->where('status','dealer')->where('user_id',$user_id)->orderby("id","ASC")->get();
         $total = Client::where('user_id',$user_id)->where('status','dealer')->sum('price_all');
         if($client ->count() > 0){
             return response()->json([
@@ -512,10 +524,29 @@ public function newterm(Request $Request ,int $client,int $amber,int $fridge ,in
             ],200);
         }else{
             return response()->json([
-                'status'=>404,
+                'status'=>200,
                 'message'=> 'No Client Found'
-            ],404);
+            ],200);
         }
     }
+    public function clients_term($term){
+        $user_id=Auth::user()->id;
+        $client=Client::Select("*")->where('term_id',$term)->where('user_id',$user_id)->orderby("id","ASC")->get();
+        $total = Client::where('user_id',$user_id)->where('term_id',$term)->sum('price_all');
+        if($client ->count() > 0){
+            return response()->json([
+                'status'=>200,
+                //'client'=> $client
+                'client'=>clientResource::collection($client),
+                'total'=>$total
+            ],200);
+        }else{
+            return response()->json([
+                'status'=>200,
+                'message'=> 'No Client Found'
+            ],200);
+        }
+    }
+
 
 }

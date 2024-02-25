@@ -31,13 +31,13 @@ class PricesController extends Controller
         }
     }
     public function store(PriceRequest $Request){
-            $user_id=Auth::user()->id;
+        $userId=Auth::user()->id;
             $price=PriceList::create([
                 'vegetable_name'=> $Request->vegetable_name,
                 'ton'=> $Request->ton,
                 'small_shakara'=> $Request->small_shakara,
                 'big_shakara'=> $Request->big_shakara,
-                'user_id'=> $user_id,
+                'user_id'=> $userId,
             ]);
             if($price){
             return response()->json([

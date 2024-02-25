@@ -101,4 +101,24 @@ class ExpenseController extends Controller
              ],200);
          }
      } 
+     
+   public function search(Request $request)
+   {
+     $user_id=Auth::user()->id;
+     $keyword = $request->input('keyword');
+         $expense = Expense::select('id','amount','description',DB::raw("DATE_FORMAT(created_at, '%d/ %m/ 20%y') as date"))
+         ->where('user_id', $user_id)
+         ->where(function ($query) use ($keyword) {
+             $query->where('amount', 'LIKE', '%' . $keyword . '%')
+                ->orWhere('description', 'LIKE', '%' . $keyword . '%')
+                ->orWhere('created_at', 'LIKE', '%' . $keyword . '%');
+          })->get();
+     return response()->json(
+         [
+             'status'=>200,
+             'expense'=>$expense
+        ],200
+     );
+ }
+
 }

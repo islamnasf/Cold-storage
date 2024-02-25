@@ -102,4 +102,22 @@ class TermController extends Controller
              ],404);
          }
      } 
+    public function search(Request $request)
+   {
+     $user_id=Auth::user()->id;
+     $keyword = $request->input('keyword');
+         $term = Term::select('id','name','start','end')
+         ->where('user_id', $user_id)
+         ->where(function ($query) use ($keyword) {
+             $query->where('name', 'LIKE', '%' . $keyword . '%')
+                ->orWhere('start', 'LIKE', '%' . $keyword . '%')
+                ->orWhere('end', 'LIKE', '%' . $keyword . '%');
+          })->get();
+     return response()->json(
+         [
+             'status'=>200,
+             'term'=>$term
+        ],200
+     );
+ }
 }

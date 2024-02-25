@@ -34,6 +34,7 @@ Route::group(['middleware'=>'auth:api'],function($router){
     Route::get('/user',[UserController::class,'show']); //yourdata
     Route::get('/users',[UserController::class,'active']);  // all user
     Route::put('/active_user/{id}',[UserController::class,'toggleActivation']);  
+    Route::post('/user/search',[UserController::class,'search']);
 });
 // fridge
 Route::group(['middleware'=>'auth:api'],function($router){
@@ -71,6 +72,8 @@ Route::group(['middleware'=>'auth:api'],function($router){
     Route::post('/client/newterm/newprice/{amber}/{fridge}/{price}/{term}',[ClientController::class,'clientWithNewTermOrNewPrice']);
     Route::get('/client/persons',[ClientController::class,'onlyPersons']);
     Route::get('/client/dealers',[ClientController::class,'onlyDealers']);
+    Route::get('/client/term/{id}',[ClientController::class,'clients_term']);
+
 });
 //expense
 Route::group(['middleware'=>'auth:api'],function($router){
@@ -79,6 +82,8 @@ Route::group(['middleware'=>'auth:api'],function($router){
     Route::put('/expense/{id}/edit',[ExpenseController::class,'update']);
     Route::get('/expense/{id}/show',[ExpenseController::class,'show']);
     Route::delete('/expense/{id}/delete',[ExpenseController::class,'destroy']);
+    Route::post('/expense/search',[ExpenseController::class,'search']);
+
 });
 //term
 Route::group(['middleware'=>'auth:api'],function($router){
@@ -87,5 +92,6 @@ Route::group(['middleware'=>'auth:api'],function($router){
     Route::put('/term/{id}/edit',[TermController::class,'update']);
     Route::get('/term/{id}/show',[TermController::class,'show']);
     Route::delete('/term/{id}/delete',[TermController::class,'destroy']);
+    Route::post('/term/search',[TermController::class,'search']);
 });
 

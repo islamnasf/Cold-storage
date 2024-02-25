@@ -19,6 +19,7 @@ class Client extends Model
         'status',
         //
         'price_all',
+        'quantity',
         //
         'ton',
         'small_shakara',
